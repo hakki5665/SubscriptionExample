@@ -11,20 +11,34 @@ public class UserSubscription {
     @Column(name = "username", nullable = false, unique = true)
     private String username;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "subscription_type", nullable = false)
-    private String subscriptionType;
+    private SubscriptionType subscriptionType;
 
     @Column(name = "expires_at")
     private LocalDateTime expiresAt;
 
-    public String getUsername() { return username; }
-    public void setUsername(String username) { this.username = username; }
+    public String getUsername() {
+        return username;
+    }
 
-    public String getSubscriptionType() { return subscriptionType; }
-    public void setSubscriptionType(String subscriptionType) { this.subscriptionType = subscriptionType; }
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
-    public LocalDateTime getExpiresAt() { return expiresAt; }
-    public void setExpiresAt(LocalDateTime expiresAt) { this.expiresAt = expiresAt; }
+    public SubscriptionType getSubscriptionType() {
+        return subscriptionType;
+    }
+
+    public void setSubscriptionType(SubscriptionType subscriptionType) {
+        this.subscriptionType = subscriptionType;
+    }
+
+    public LocalDateTime getExpiresAt() {
+        return expiresAt;
+    }
+
+    public void setExpiresAt(LocalDateTime expiresAt) {
+        this.expiresAt = expiresAt;
+    }
 }
-
-

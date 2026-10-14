@@ -1,8 +1,11 @@
 package com.example.subscription.scheduler;
 
 import com.example.subscription.entity.UserSubscription;
+import com.example.subscription.entity.SubscriptionType;
 import com.example.subscription.repository.UserSubscriptionRepository;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -13,6 +16,8 @@ import java.util.List;
 
 @Component
 public class SubscriptionScheduler {
+
+    private static final Logger log = LoggerFactory.getLogger(SubscriptionScheduler.class);
 
     private final UserSubscriptionRepository repository;
     private final KafkaTemplate<String, String> kafkaTemplate;
@@ -34,11 +39,12 @@ public class SubscriptionScheduler {
         }
 
         for (UserSubscription sub : expiredList) {
-            sub.setSubscriptionType("FREE");
+            sub.setSubscriptionType(SubscriptionType.FREE);
             repository.save(sub);
 
             kafkaTemplate.send("subscription-invalidations-topic", sub.getUsername(), sub.getUsername());
-            System.out.println("Подписка пользователя " + sub.getUsername() + " истекла. Отправлено событие в Kafka.");
+
+            log.info("Подписка пользователя {} истекла. Отправлено событие инвалидации кэша в Kafka.", sub.getUsername());
         }
     }
 }

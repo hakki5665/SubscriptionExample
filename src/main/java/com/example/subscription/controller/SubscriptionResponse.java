@@ -1,6 +1,5 @@
 package com.example.subscription.controller;
 
-
 public class SubscriptionResponse {
     private String username;
     private String subscriptionType;

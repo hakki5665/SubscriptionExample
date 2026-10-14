@@ -12,6 +12,6 @@ import java.util.List;
 @Repository
 public interface UserSubscriptionRepository extends JpaRepository<UserSubscription, String> {
 
-    @Query("SELECT s FROM UserSubscription s WHERE s.subscriptionType = 'PREMIUM' AND s.expiresAt < :now")
+    @Query("SELECT s FROM UserSubscription s WHERE s.subscriptionType = com.example.subscription.entity.SubscriptionType.PREMIUM AND s.expiresAt < :now")
     List<UserSubscription> findExpiredSubscriptions(@Param("now") LocalDateTime now);
 }
