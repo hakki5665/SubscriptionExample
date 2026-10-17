@@ -16,10 +16,6 @@ import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.utility.DockerImageName;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.Statement;
-
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public abstract class BaseSubscriptionIntegrationTest {
 
@@ -51,17 +47,6 @@ public abstract class BaseSubscriptionIntegrationTest {
         kafka.start();
         redis.start();
 
-        try (Connection conn = DriverManager.getConnection(postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword());
-             Statement stmt = conn.createStatement()) {
-            stmt.execute("CREATE TABLE IF NOT EXISTS shedlock (" +
-                    "name VARCHAR(64) NOT NULL, " +
-                    "lock_until TIMESTAMP NOT NULL, " +
-                    "locked_at TIMESTAMP NOT NULL, " +
-                    "locked_by VARCHAR(255) NOT NULL, " +
-                    "value VARCHAR(255) NOT NULL DEFAULT '', " +
-                    "PRIMARY KEY (name))");
-        } catch (Exception ignored) {
-        }
     }
 
     @BeforeEach
@@ -76,6 +61,11 @@ public abstract class BaseSubscriptionIntegrationTest {
         registry.add("spring.datasource.url", postgres::getJdbcUrl);
         registry.add("spring.datasource.username", postgres::getUsername);
         registry.add("spring.datasource.password", postgres::getPassword);
+
+        registry.add("spring.liquibase.enabled", () -> "true");
+        registry.add("spring.liquibase.change-log", () -> "classpath:db/changelog/db.changelog-master.yaml");
+
+        registry.add("spring.jpa.hibernate.ddl-auto", () -> "validate");
 
         registry.add("spring.kafka.bootstrap-servers", () -> bootstrapServers);
         registry.add("spring.data.redis.host", redis::getHost);
